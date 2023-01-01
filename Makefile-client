@@ -1,0 +1,57 @@
+# Subject:  Pocitacove komunikace a site
+# Project:  Projekt 3 - Implementace zretezeneho RDT
+# Author:   Radim Loskot, xlosko01@stud.fit.vutbr.cz
+# Date:     5. 4. 2011
+# 
+# Usage:
+#	- make            compile project - release version
+#	- make clean      clean temp compilers files    
+#	- make clean-all  clean all compilers files - includes project    
+#	- make clean-outp clean output project files 
+#
+
+# output project and package filename
+NAME=rdtclient	
+OBJ_DIR=objs/client
+SRC_DIR=src/client
+LIB_DIR=objs/libs
+
+# C compiler and flags
+CXX=gcc
+FLAGS=-std=gnu99 -Wall -pedantic -W
+
+# Project files
+OBJ_FILES=rdtclient.o snd_window.o
+SRC_FILES=rdtclient.c udt.h snd_window.c snd_window.h
+LIB_FILES=
+
+# Substitute the path
+OBJ=$(patsubst %,$(OBJ_DIR)/%,$(OBJ_FILES))
+SRC=$(patsubst %,$(SRC_DIR)/%,$(SRC_FILES))
+LIB=$(patsubst %,$(LIB_DIR)/%,$(LIB_FILES))
+
+# Universal rule
+$(OBJ_DIR)/%.o : $(SRC_DIR)/%.c 
+	$(CXX) -c -o $@ $< $(FLAGS)
+
+# START RULE
+all: $(NAME)
+
+# Rules - body included from universal rule
+rdtclient.o: rdtclient.c udt.h window.h rdt.h snd_window.h
+snd_window.o: snd_window.c snd_window.h
+
+# Linking of modules into release program
+$(NAME): $(OBJ) $(LIB)
+	$(CXX) -o $@ $^ $(FLAGS)
+	
+.PHONY: clean clean-all clean-outp
+
+clean:
+	rm -r -f $(OBJ_DIR)/*.o
+
+clean-outp:								# project doesnt produce any
+	
+
+clean-all: clean clean-outp
+	rm -rf $(NAME)
